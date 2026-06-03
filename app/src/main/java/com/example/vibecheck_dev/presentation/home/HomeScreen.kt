@@ -29,13 +29,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     onNavigateToCamera: () -> Unit,
-    onNavigateToRemote: () -> Unit
+    onNavigateToRemote: () -> Unit,
+    onNavigateToProfile: () -> Unit, // Tambahan
+    onLogout: () -> Unit             // Tambahan
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
 
-    // State untuk masing-masing Dialog
-    var showProfileDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
@@ -47,24 +47,17 @@ fun HomeScreen(
             ModalDrawerSheet(
                 drawerContainerColor = Color(0xFF050505),
                 drawerShape = RectangleShape,
-                modifier = Modifier
-                    .width(300.dp)
-                    .border(2.dp, Color.Cyan, RectangleShape)
+                modifier = Modifier.width(300.dp).border(2.dp, Color.Cyan, RectangleShape)
             ) {
                 Column(modifier = Modifier.padding(24.dp).fillMaxHeight()) {
-                    Text(
-                        text = "SYS_MENU.exe",
-                        style = Y2KTypography.titleLarge,
-                        color = Color.Magenta
-                    )
+                    Text("SYS_MENU.exe", style = Y2KTypography.titleLarge, color = Color.Magenta)
                     Spacer(modifier = Modifier.height(12.dp))
                     HorizontalDivider(color = Color.Cyan, thickness = 2.dp)
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    // Menu dengan UI Hacker & Action Trigger
                     DrawerMenuItem(title = "PROFILE.cfg") {
                         coroutineScope.launch { drawerState.close() }
-                        showProfileDialog = true
+                        onNavigateToProfile() // Langsung ke layar Profile beneran!
                     }
                     DrawerMenuItem(title = "THEME.ini") {
                         coroutineScope.launch { drawerState.close() }
@@ -77,17 +70,11 @@ fun HomeScreen(
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    // Tombol Logout
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                coroutineScope.launch { drawerState.close() }
-                                showLogoutDialog = true
-                            }
-                            .background(Color.Red.copy(alpha = 0.2f))
-                            .border(2.dp, Color.Red, RectangleShape)
-                            .padding(16.dp),
+                        modifier = Modifier.fillMaxWidth().clickable {
+                            coroutineScope.launch { drawerState.close() }
+                            showLogoutDialog = true
+                        }.background(Color.Red.copy(alpha = 0.2f)).border(2.dp, Color.Red, RectangleShape).padding(16.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text("[ SYSTEM_LOGOUT ]", color = Color.White, style = Y2KTypography.bodyMedium)
@@ -99,86 +86,35 @@ fun HomeScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = {
-                        Text("VIBECHECK_OS", style = Y2KTypography.titleMedium, color = Color.Green)
-                    },
+                    title = { Text("VIBECHECK_OS", style = Y2KTypography.titleMedium, color = Color.Green) },
                     navigationIcon = {
                         IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
                             Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.Green)
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Black
-                    ),
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black),
                     modifier = Modifier.drawBehind {
                         val strokeWidth = 2.dp.toPx()
                         val y = size.height - strokeWidth / 2
-                        drawLine(
-                            color = Color.Green,
-                            start = Offset(0f, y),
-                            end = Offset(size.width, y),
-                            strokeWidth = strokeWidth
-                        )
+                        drawLine(Color.Green, Offset(0f, y), Offset(size.width, y), strokeWidth)
                     }
                 )
             },
             containerColor = Color.Black
         ) { innerPadding ->
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(24.dp),
+                modifier = Modifier.fillMaxSize().padding(innerPadding).padding(24.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "SELECT ROLE",
-                    style = Y2KTypography.titleLarge,
-                    color = Color.White
-                )
+                Text("SELECT ROLE", style = Y2KTypography.titleLarge, color = Color.White)
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Pilih perangkat ini mau jadi lensa kamera atau remote kontrol.",
-                    style = Y2KTypography.bodyMedium,
-                    color = Color.LightGray,
-                    textAlign = TextAlign.Center
-                )
+                Text("Pilih perangkat ini mau jadi lensa kamera atau remote kontrol.", style = Y2KTypography.bodyMedium, color = Color.LightGray, textAlign = TextAlign.Center)
                 Spacer(modifier = Modifier.height(48.dp))
 
-                RoleButton(
-                    title = "HOST (CAMERA)",
-                    description = "Aktifin AI & Pancarin P2P",
-                    icon = Icons.Default.Camera,
-                    color = Color.Magenta,
-                    onClick = onNavigateToCamera
-                )
-
+                RoleButton("HOST (CAMERA)", "Aktifin AI & Pancarin P2P", Icons.Default.Camera, Color.Magenta, onNavigateToCamera)
                 Spacer(modifier = Modifier.height(24.dp))
-
-                RoleButton(
-                    title = "REMOTE (CTRL)",
-                    description = "Konek ke Host & Jepret",
-                    icon = Icons.Default.PhoneAndroid,
-                    color = Color.Cyan,
-                    onClick = onNavigateToRemote
-                )
-            }
-        }
-    }
-
-    // --- IMPLEMENTASI KUMPULAN DIALOG Y2K ---
-
-    if (showProfileDialog) {
-        Y2KDialogWrapper(title = "USER_DATA", borderColor = Color.Cyan, onDismiss = { showProfileDialog = false }) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text("> ID: FIKAL ALIF AL AMIN", color = Color.White, style = Y2KTypography.bodyMedium)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("> RANK: ADMIN / ROOT", color = Color.Magenta, style = Y2KTypography.bodyMedium)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("> DIV: INFORMATICS ENG.", color = Color.Green, style = Y2KTypography.bodyMedium)
-                Spacer(modifier = Modifier.height(24.dp))
-                Y2KDialogButton("ACKNOWLEDGE", Color.Cyan) { showProfileDialog = false }
+                RoleButton("REMOTE (CTRL)", "Konek ke Host & Jepret", Icons.Default.PhoneAndroid, Color.Cyan, onNavigateToRemote)
             }
         }
     }
@@ -215,14 +151,12 @@ fun HomeScreen(
                 Text("TERMINATE SESSION?", color = Color.Red, style = Y2KTypography.titleLarge, modifier = Modifier.y2kBlinkEffect(500))
                 Spacer(modifier = Modifier.height(24.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Box(modifier = Modifier.weight(1f)) {
-                        Y2KDialogButton("NO / ABORT", Color.DarkGray) { showLogoutDialog = false }
-                    }
+                    Box(modifier = Modifier.weight(1f)) { Y2KDialogButton("NO / ABORT", Color.DarkGray) { showLogoutDialog = false } }
                     Spacer(modifier = Modifier.width(16.dp))
                     Box(modifier = Modifier.weight(1f)) {
                         Y2KDialogButton("YES / KILL", Color.Red) {
                             showLogoutDialog = false
-                            // TODO: Eksekusi clear session / navigasi ke Onboarding
+                            onLogout() // Eksekusi fungsi logout!
                         }
                     }
                 }
@@ -231,33 +165,11 @@ fun HomeScreen(
     }
 }
 
-// --- SUBKOMPONEN UI ---
-
 @Composable
-fun RoleButton(
-    title: String,
-    description: String,
-    icon: ImageVector,
-    color: Color,
-    onClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .background(Color.DarkGray.copy(alpha = 0.3f))
-            .border(2.dp, color, RectangleShape)
-            .padding(16.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = color,
-                modifier = Modifier.size(48.dp)
-            )
+fun RoleButton(title: String, description: String, icon: ImageVector, color: Color, onClick: () -> Unit) {
+    Box(modifier = Modifier.fillMaxWidth().clickable { onClick() }.background(Color.DarkGray.copy(alpha = 0.3f)).border(2.dp, color, RectangleShape).padding(16.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(imageVector = icon, contentDescription = null, tint = color, modifier = Modifier.size(48.dp))
             Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text(text = title, style = Y2KTypography.bodyLarge, color = color)
@@ -270,91 +182,44 @@ fun RoleButton(
 
 @Composable
 fun DrawerMenuItem(title: String, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable { onClick() }
-            .background(Color(0xFF001A1A))
-            .border(2.dp, Color.Cyan, RectangleShape)
-            .padding(16.dp)
-    ) {
+    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).clickable { onClick() }.background(Color(0xFF001A1A)).border(2.dp, Color.Cyan, RectangleShape).padding(16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "[", color = Color.White, style = Y2KTypography.bodyMedium)
-            Text(text = " RUN ", color = Color.Magenta, style = Y2KTypography.bodyMedium, modifier = Modifier.y2kBlinkEffect(800))
-            Text(text = "] ", color = Color.White, style = Y2KTypography.bodyMedium)
+            Text("[", color = Color.White, style = Y2KTypography.bodyMedium)
+            Text(" RUN ", color = Color.Magenta, style = Y2KTypography.bodyMedium, modifier = Modifier.y2kBlinkEffect(800))
+            Text("] ", color = Color.White, style = Y2KTypography.bodyMedium)
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = title, style = Y2KTypography.bodyLarge, color = Color.Cyan)
+            Text(title, style = Y2KTypography.bodyLarge, color = Color.Cyan)
         }
     }
 }
 
-// PEMBUNGKUS DIALOG RETRO TERMINAL
 @Composable
-fun Y2KDialogWrapper(
-    title: String,
-    borderColor: Color,
-    onDismiss: () -> Unit,
-    content: @Composable () -> Unit
-) {
+fun Y2KDialogWrapper(title: String, borderColor: Color, onDismiss: () -> Unit, content: @Composable () -> Unit) {
     Dialog(onDismissRequest = onDismiss) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Black)
-                .border(3.dp, borderColor, RectangleShape)
-                .padding(2.dp) // Inner gap
-                .border(1.dp, Color.DarkGray, RectangleShape)
-                .padding(20.dp)
-        ) {
+        Box(modifier = Modifier.fillMaxWidth().background(Color.Black).border(3.dp, borderColor, RectangleShape).padding(2.dp).border(1.dp, Color.DarkGray, RectangleShape).padding(20.dp)) {
             Column {
-                // Header Window
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Text("[$title]", color = borderColor, style = Y2KTypography.titleMedium)
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close",
-                        tint = Color.Gray,
-                        modifier = Modifier.clickable { onDismiss() }
-                    )
+                    Icon(Icons.Default.Close, "Close", tint = Color.Gray, modifier = Modifier.clickable { onDismiss() })
                 }
-
                 HorizontalDivider(color = Color.DarkGray, thickness = 1.dp)
                 Spacer(modifier = Modifier.height(16.dp))
-
-                // Isi Konten
                 content()
             }
         }
     }
 }
 
-// TOMBOL DIALOG RETRO
 @Composable
 fun Y2KDialogButton(text: String, color: Color, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .background(color.copy(alpha = 0.2f))
-            .border(2.dp, color, RectangleShape)
-            .padding(vertical = 12.dp),
-        contentAlignment = Alignment.Center
-    ) {
+    Box(modifier = Modifier.fillMaxWidth().clickable { onClick() }.background(color.copy(alpha = 0.2f)).border(2.dp, color, RectangleShape).padding(vertical = 12.dp), contentAlignment = Alignment.Center) {
         Text(text, color = if(color == Color.DarkGray) Color.LightGray else color, style = Y2KTypography.bodyMedium)
     }
 }
 
 @Composable
 fun ThemeOptionItem(name: String, isActive: Boolean) {
-    Row(
-        modifier = Modifier.fillMaxWidth().background(if(isActive) Color.DarkGray else Color.Transparent).border(1.dp, if(isActive) Color.White else Color.DarkGray, RectangleShape).padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Row(modifier = Modifier.fillMaxWidth().background(if(isActive) Color.DarkGray else Color.Transparent).border(1.dp, if(isActive) Color.White else Color.DarkGray, RectangleShape).padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(modifier = Modifier.size(16.dp).background(if(isActive) Color.Magenta else Color.Black).border(1.dp, Color.White, RectangleShape))
         Spacer(modifier = Modifier.width(16.dp))
         Text(name, color = if(isActive) Color.White else Color.Gray, style = Y2KTypography.bodyMedium)

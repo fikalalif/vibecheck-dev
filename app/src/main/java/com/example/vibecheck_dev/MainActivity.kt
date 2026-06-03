@@ -40,8 +40,10 @@ import com.example.vibecheck_dev.presentation.remote.RemoteViewModel
 // Asumsi lu udah bikin VibeBottomNav dari panduan sebelumnya ya
 import com.example.vibecheck_dev.presentation.components.VibeBottomNav
 import com.example.vibecheck_dev.presentation.auth.AuthScreen
+import com.example.vibecheck_dev.presentation.auth.AuthViewModel
 import com.example.vibecheck_dev.presentation.auth.LoginScreen
 import com.example.vibecheck_dev.presentation.auth.OnboardingScreen
+import com.example.vibecheck_dev.presentation.auth.ProfileScreen
 import com.example.vibecheck_dev.presentation.auth.ProfileSetupScreen
 import com.example.vibecheck_dev.presentation.studio.StudioScreen
 import com.example.vibecheck_dev.presentation.studio.StudioViewModel
@@ -118,39 +120,36 @@ fun AppNavigation() {
                 )
             }
 
-            composable(Screen.Auth.route) {
-                AuthScreen(
-                    onNavigateToLogin = {
-                        // Loncat ke layar form email/password (Bisa pakai Supabase Auth nanti)
-                        navController.navigate(Screen.Login.route)
-                    },
-                    onNavigateToGuest = {
-                        // Masuk mode lokal, suruh isi nickname
-                        navController.navigate(Screen.ProfileSetup.route)
-                    }
-                )
-            }
-
             composable(Screen.ProfileSetup.route) {
                 ProfileSetupScreen(
                     onSaveSuccess = {
-                        navController.navigate(Screen.Permission.route) {
-                            popUpTo(Screen.Auth.route) { inclusive = true }
-                        }
+                        navController.navigate(Screen.Permission.route) { popUpTo(Screen.Auth.route) { inclusive = true } }
                     },
                     userPreferences = userPreferences
+                )
+            }
+
+            composable(Screen.Auth.route) {
+                AuthScreen(
+                    onNavigateToLogin = { navController.navigate(Screen.Login.route) },
+                    onNavigateToGuest = { navController.navigate(Screen.ProfileSetup.route) }
+                )
+            }
+
+            composable(Screen.Profile.route) {
+                ProfileScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onLogoutSuccess = {
+                        navController.navigate(Screen.Auth.route) { popUpTo(0) { inclusive = true } }
+                    }
                 )
             }
 
             composable(Screen.Login.route) {
                 LoginScreen(
                     onLoginSuccess = {
-                        // Kalau sukses login, lempar ke Permission
-                        navController.navigate(Screen.Permission.route) {
-                            popUpTo(Screen.Auth.route) { inclusive = true }
-                        }
-                    },
-                    userPreferences = userPreferences
+                        navController.navigate(Screen.Permission.route) { popUpTo(Screen.Auth.route) { inclusive = true } }
+                    }
                 )
             }
 
@@ -166,9 +165,16 @@ fun AppNavigation() {
             }
 
             composable(Screen.Home.route) {
+                val authViewModel: AuthViewModel = koinViewModel()
                 HomeScreen(
                     onNavigateToCamera = { navController.navigate(Screen.Host.route) },
-                    onNavigateToRemote = { navController.navigate(Screen.Remote.route) }
+                    onNavigateToRemote = { navController.navigate(Screen.Remote.route) },
+                    onNavigateToProfile = { navController.navigate(Screen.Profile.route) },
+                    onLogout = {
+                        authViewModel.logout(onLogoutComplete = {
+                            navController.navigate(Screen.Auth.route) { popUpTo(0) { inclusive = true } }
+                        })
+                    }
                 )
             }
 

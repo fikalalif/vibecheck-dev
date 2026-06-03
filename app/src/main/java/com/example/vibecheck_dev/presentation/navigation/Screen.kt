@@ -14,6 +14,8 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
 
     object Auth : Screen("auth_screen", "AUTH", null)
     object Login : Screen("login_screen", "LOGIN", null)
+    object Profile : Screen("profile_screen", "PROFILE", null)
+
     object ProfileSetup : Screen("profile_setup_screen", "PROFILE", null)
     object Permission : Screen("permission_screen", "PERMISSION", null)
 
