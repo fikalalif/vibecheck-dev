@@ -2,6 +2,9 @@ package com.example.vibecheck_dev.data.repository_impl
 
 import com.example.vibecheck_dev.data.remote.dto.AddLogRequest
 import com.example.vibecheck_dev.data.remote.dto.LogDto
+import com.example.vibecheck_dev.data.remote.dto.MarketDataPayload
+import com.example.vibecheck_dev.data.remote.dto.TelemetryData
+import com.example.vibecheck_dev.data.remote.dto.TelemetryRequest
 import com.example.vibecheck_dev.data.remote.dto.UpdateProfilePictureRequest
 import com.example.vibecheck_dev.data.remote.dto.UpdateUsernameRequest
 import com.example.vibecheck_dev.data.remote.network.VibeCheckApi
@@ -55,5 +58,40 @@ class UserRepositoryImpl(
             val response = api.addClientLog(AddLogRequest(action, details, deviceName))
             if (response.isSuccessful) Result.success(Unit) else Result.failure(Exception("Gagal push log"))
         } catch (e: Exception) { Result.failure(e) }
+    }
+
+    override suspend fun trackActivity(type: String, subtype: String?): Result<Unit> {
+        return try {
+            val response = api.trackActivity(TelemetryRequest(type, subtype))
+            if (response.isSuccessful) Result.success(Unit) else Result.failure(Exception("Gagal ngirim telemetri"))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getTelemetryStats(): Result<TelemetryData> {
+        return try {
+            val response = api.getTelemetryStats()
+            if (response.isSuccessful && response.body()?.success == true) {
+                Result.success(response.body()?.data ?: TelemetryData())
+            } else {
+                Result.failure(Exception("Gagal narik data statistik"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getMarketData(): Result<MarketDataPayload> {
+        return try {
+            val response = api.getMarketData()
+            if (response.isSuccessful && response.body()?.success == true) {
+                Result.success(response.body()?.data ?: MarketDataPayload())
+            } else {
+                Result.failure(Exception(response.message()))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

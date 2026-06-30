@@ -17,5 +17,6 @@ data class StudioUiState(
     val savedCustomPresets: List<Y2KPreset> = emptyList(),
     val showSaveDialog: Boolean = false,
     val newPresetName: String = "",
-    val isSaving: Boolean = false
+    val isSaving: Boolean = false,
+    val appliedPresetName: String = "NORMAL"
 )

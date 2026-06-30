@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vibecheck_dev.domain.model.Y2KPreset
+import com.example.vibecheck_dev.domain.repository.UserRepository
 import com.example.vibecheck_dev.domain.util.ColorMatrixUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +24,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
-class StudioViewModel : ViewModel() {
+class StudioViewModel(
+    private val userRepository: UserRepository // 🔴 1. TAMBAHIN INI BIAR BISA NGIRIM DATA
+) : ViewModel() {
     private val _uiState = MutableStateFlow(StudioUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -35,13 +38,16 @@ class StudioViewModel : ViewModel() {
             is StudioEvent.UpdateContrast -> _uiState.update { it.copy(currentContrast = event.value) }
             is StudioEvent.UpdateSaturation -> _uiState.update { it.copy(currentSaturation = event.value) }
             is StudioEvent.UpdateWarmth -> _uiState.update { it.copy(currentWarmth = event.value) }
-            is StudioEvent.ApplyPreset -> _uiState.update {
-                it.copy(
-                    currentBrightness = event.preset.brightness,
-                    currentContrast = event.preset.contrast,
-                    currentSaturation = event.preset.saturation,
-                    currentWarmth = event.preset.warmth
-                )
+            is StudioEvent.ApplyPreset -> {
+                _uiState.update {
+                    it.copy(
+                        currentBrightness = event.preset.brightness,
+                        currentContrast = event.preset.contrast,
+                        currentSaturation = event.preset.saturation,
+                        currentWarmth = event.preset.warmth,
+                        appliedPresetName = event.preset.name
+                    )
+                }
             }
             is StudioEvent.ToggleSaveDialog -> _uiState.update { it.copy(showSaveDialog = event.show) }
             is StudioEvent.UpdateNewPresetName -> _uiState.update { it.copy(newPresetName = event.name) }
@@ -131,6 +137,10 @@ class StudioViewModel : ViewModel() {
                         resultBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
                     }
                     success = true
+
+                    try {
+                        userRepository.trackActivity("filter", state.appliedPresetName)
+                    } catch (e: Exception) {}
                 }
                 withContext(Dispatchers.Main) {
                     _uiState.update { it.copy(isSaving = false) }

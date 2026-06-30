@@ -127,4 +127,11 @@ dependencies {
 
     // 6. ML Kit Face Detection (Untuk mendeteksi senyum)
     implementation("com.google.mlkit:face-detection:16.1.7")
+
+    implementation("androidx.concurrent:concurrent-futures-ktx:1.2.0")
+    androidTestImplementation("androidx.concurrent:concurrent-futures-ktx:1.2.0")
+
+    // Vico Charts untuk Jetpack Compose M3
+    implementation("com.patrykandpatrick.vico:compose-m3:1.12.0")
+    implementation("com.patrykandpatrick.vico:core:1.12.0")
 }
