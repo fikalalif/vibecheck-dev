@@ -9,6 +9,7 @@ import com.example.vibecheck_dev.domain.repository.P2pRepository
 import com.example.vibecheck_dev.domain.repository.UserRepository
 import com.example.vibecheck_dev.presentation.auth.AuthViewModel
 import com.example.vibecheck_dev.presentation.camera.CameraViewModel
+import com.example.vibecheck_dev.presentation.home.AnalyticsViewModel
 import com.example.vibecheck_dev.presentation.home.HomeViewModel
 import com.example.vibecheck_dev.presentation.purikura.PurikuraViewModel
 import com.example.vibecheck_dev.presentation.remote.RemoteViewModel
@@ -28,13 +29,17 @@ val appModule = module {
     // --- TAMBAHAN UNTUK AUTH ---
     single { FirebaseAuth.getInstance() }
 
-    viewModel { CameraViewModel(get()) }
-    viewModel { RemoteViewModel(get()) }
-    viewModel { StudioViewModel() }
-    viewModel { PurikuraViewModel() }
+    viewModel { CameraViewModel(get(), get()) }
+    viewModel { RemoteViewModel(get(), get()) }
+
+
+    viewModel { StudioViewModel(get()) }
+    // 🔴 TAMBAHIN get() BUAT PURIKURA
+    viewModel { PurikuraViewModel(get()) }
     // --- TAMBAHAN UNTUK AUTH ---
     viewModel { AuthViewModel(get(), get()) }
     single { AuthInterceptor(get()) }
+    viewModel { AnalyticsViewModel(get()) }
 
     single {
         val loggingInterceptor = HttpLoggingInterceptor().apply {

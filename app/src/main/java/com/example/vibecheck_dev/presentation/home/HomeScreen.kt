@@ -113,6 +113,7 @@ fun HomeScreen(
     onNavigateToCamera: () -> Unit,
     onNavigateToRemote: () -> Unit,
     onNavigateToLogs: () -> Unit = {}, // 🔴 TAMBAHIN INI
+    onNavigateToAnalytics: () -> Unit = {}, // 🔴 TAMBAHAN INI COY
     onLogout: () -> Unit = {},
     isGuestMode: Boolean = false,
     guestName: String = "GUEST",
@@ -289,6 +290,10 @@ fun HomeScreen(
                             DrawerMenuItem(title = "SYS_AUDIT.log", primaryColor, secondaryColor, onBgColor) {
                                 coroutineScope.launch { drawerState.close() }
                                 onNavigateToLogs()
+                            }
+                            DrawerMenuItem(title = "SYS_TELEMETRY.exe", primaryColor, secondaryColor, onBgColor) {
+                                coroutineScope.launch { drawerState.close() }
+                                onNavigateToAnalytics()
                             }
                             DrawerMenuItem(title = "ABOUT.txt", primaryColor, secondaryColor, onBgColor) {
                                 coroutineScope.launch { drawerState.close() }

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vibecheck_dev.domain.model.DetectedScene
 import com.example.vibecheck_dev.domain.repository.P2pRepository
+import com.example.vibecheck_dev.domain.repository.UserRepository
 import com.example.vibecheck_dev.domain.util.IdlePoseTracker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,7 +20,8 @@ import kotlinx.coroutines.launch
 import com.example.vibecheck_dev.presentation.camera.Y2KPoseType
 
 class CameraViewModel(
-    private val p2pRepository: P2pRepository
+    private val p2pRepository: P2pRepository,
+    private val userRepository: UserRepository // 🔴 TAMBAHAN
 ) : ViewModel() {
 
     private val idleTracker = IdlePoseTracker()
@@ -176,6 +178,21 @@ class CameraViewModel(
             }
 
             is CameraEvent.TakePhotoLocal -> {
+                // 🔴 INVESTIGASI TELEMETRI: Kita keluarin error-nya ke Logcat!
+                viewModelScope.launch {
+                    try {
+                        Log.d("TELEMETRY_TEST", ">>> Mencoba kirim data shutter ke Vercel...")
+                        val result = userRepository.trackActivity("shutter")
+
+                        if (result.isSuccess) {
+                            Log.d("TELEMETRY_TEST", ">>> SUKSES! Data berhasil dicatat Vercel.")
+                        } else {
+                            Log.e("TELEMETRY_TEST", ">>> GAGAL DARI SERVER: ${result.exceptionOrNull()?.message}")
+                        }
+                    } catch (e: Exception) {
+                        Log.e("TELEMETRY_TEST", ">>> CRASH/ERROR JARINGAN: ${e.message}")
+                    }
+                }
                 _takePhotoTrigger.tryEmit(Unit)
             }
 

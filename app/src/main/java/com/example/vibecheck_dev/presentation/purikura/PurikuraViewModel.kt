@@ -15,6 +15,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.print.PrintHelper
+import com.example.vibecheck_dev.domain.repository.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +23,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PurikuraViewModel : ViewModel() {
+class PurikuraViewModel(
+    private val userRepository: UserRepository // 🔴 TAMBAHAN
+) : ViewModel() {
     private val _uiState = MutableStateFlow(PurikuraUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -169,6 +172,14 @@ class PurikuraViewModel : ViewModel() {
     }
 
     private fun executeSave(context: Context, onResult: (Boolean, String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                // 🔴 HANYA NYATET FRAME (Misal: GRID_2X2, STRIP_1X3)
+                // Tracking filter kita pindah ke StudioViewModel!
+                userRepository.trackActivity("frame", _uiState.value.selectedGrid.name)
+            } catch (e: Exception) { }
+        }
+
         _uiState.update { it.copy(isSaving = true, showActionDialog = false) }
         viewModelScope.launch(Dispatchers.IO) {
             val bmp = generatePurikuraBitmap(context)

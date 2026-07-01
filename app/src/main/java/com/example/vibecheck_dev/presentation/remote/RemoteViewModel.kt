@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vibecheck_dev.domain.repository.P2pRepository
+import com.example.vibecheck_dev.domain.repository.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -17,7 +18,8 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
 class RemoteViewModel(
-    private val p2pRepository: P2pRepository
+    private val p2pRepository: P2pRepository,
+    private val userRepository: UserRepository // 🔴 TAMBAHAN
 ) : ViewModel() {
 
     val isWifiEnabled = p2pRepository.isWifiP2pEnabled
@@ -177,9 +179,13 @@ class RemoteViewModel(
 
             is RemoteEvent.StopDiscovery -> p2pRepository.stopDiscovery()
             is RemoteEvent.ConnectToDevice -> {
-                // 🛡️ RESET JADI FALSE BIAR BISA MASUK KE KAMERA LAGI
                 _uiState.update { it.copy(isHostDisconnected = false) }
                 p2pRepository.connectToDevice(event.deviceAddress)
+
+                // 🔴 SILENT TRACKING: KONEKSI P2P DIMULAI
+                viewModelScope.launch {
+                    try { userRepository.trackActivity("p2p") } catch (e: Exception) { }
+                }
             }
 
             is RemoteEvent.Disconnect -> {

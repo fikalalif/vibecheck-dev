@@ -39,6 +39,8 @@ import com.example.vibecheck_dev.presentation.auth.LoginScreen
 import com.example.vibecheck_dev.presentation.auth.OnboardingScreen
 import com.example.vibecheck_dev.presentation.auth.ProfileSetupScreen
 import com.example.vibecheck_dev.presentation.auth.QuickAuthDialog
+import com.example.vibecheck_dev.presentation.home.AnalyticsScreen
+import com.example.vibecheck_dev.presentation.home.AnalyticsViewModel
 import com.example.vibecheck_dev.presentation.studio.StudioScreen
 import com.example.vibecheck_dev.presentation.studio.StudioViewModel
 import kotlinx.coroutines.launch
@@ -191,6 +193,7 @@ fun AppNavigation(userPreferences: UserPreferences) {
                         onNavigateToCamera = { navController.navigate(Screen.Camera.route) },
                         onNavigateToRemote = { navController.navigate(Screen.Remote.route) },
                         onNavigateToLogs = { navController.navigate(Screen.SystemLog.route) },
+                        onNavigateToAnalytics = { navController.navigate(Screen.Analytics.route) },
                         onLogout = {
                             coroutineScope.launch {
                                 userPreferences.saveAuthSession(token = "", isLogged = false)
@@ -238,6 +241,10 @@ fun AppNavigation(userPreferences: UserPreferences) {
                     // Panggil koinViewModel biar dia otomatis ngambil HomeViewModel
                     val homeViewModel: com.example.vibecheck_dev.presentation.home.HomeViewModel = koinViewModel()
                     com.example.vibecheck_dev.presentation.home.SystemLogScreen(viewModel = homeViewModel)
+                }
+                composable(Screen.Analytics.route) {
+                    val analyticsViewModel: AnalyticsViewModel = koinViewModel()
+                    AnalyticsScreen(viewModel = analyticsViewModel)
                 }
             }
 
