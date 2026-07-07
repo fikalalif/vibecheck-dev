@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.vibecheck_dev" />
+                  <option name="mobileSdkAppId" value="1:372157512376:android:d6c9699da126e0eedbd24d" />
+                  <option name="projectId" value="vibecheck-39256" />
+                  <option name="projectNumber" value="372157512376" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

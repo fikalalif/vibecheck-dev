@@ -132,6 +132,7 @@ fun HomeScreen(
     var showThemeDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var showHelpDialog by remember { mutableStateOf(false) }
 
     val bgColor = MaterialTheme.colorScheme.background
     val surfaceColor = MaterialTheme.colorScheme.surface
@@ -178,7 +179,8 @@ fun HomeScreen(
                 Column(
                     modifier = Modifier
                         .padding(24.dp)
-                        .fillMaxHeight(),
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -227,6 +229,10 @@ fun HomeScreen(
                             DrawerMenuItem(title = "THEME.ini", primaryColor, secondaryColor, onBgColor) {
                                 coroutineScope.launch { drawerState.close() }
                                 showThemeDialog = true
+                            }
+                            DrawerMenuItem(title = "README.txt", primaryColor, secondaryColor, onBgColor) {
+                                coroutineScope.launch { drawerState.close() }
+                                showHelpDialog = true
                             }
                             DrawerMenuItem(title = "ABOUT.txt", primaryColor, secondaryColor, onBgColor) {
                                 coroutineScope.launch { drawerState.close() }
@@ -295,6 +301,11 @@ fun HomeScreen(
                                 coroutineScope.launch { drawerState.close() }
                                 onNavigateToAnalytics()
                             }
+                            // MENU BANTUAN
+                            DrawerMenuItem(title = "README.txt", primaryColor, secondaryColor, onBgColor) {
+                                coroutineScope.launch { drawerState.close() }
+                                showHelpDialog = true
+                            }
                             DrawerMenuItem(title = "ABOUT.txt", primaryColor, secondaryColor, onBgColor) {
                                 coroutineScope.launch { drawerState.close() }
                                 showAboutDialog = true
@@ -303,6 +314,7 @@ fun HomeScreen(
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     Box(
                         modifier = Modifier
@@ -510,6 +522,31 @@ fun HomeScreen(
                 ThemeOptionItem("CYBER CHROME (LIGHT)", listOf(Color(0xFFE0E0E0), Color(0xFFFF5722), Color(0xFF00E5FF)), activeTheme == "CYBER CHROME (LIGHT)", onBgColor) { activeTheme = "CYBER CHROME (LIGHT)" }
                 Spacer(modifier = Modifier.height(12.dp))
                 Y2KDialogButton("APPLY", primaryColor, onBgColor) { onThemeChanged(activeTheme); showThemeDialog = false }
+            }
+        }
+    }
+
+    // --- POPUP BANTUAN ---
+    if (showHelpDialog) {
+        Y2KDialogWrapper(title = "HOW_TO_USE.txt", accentColor = secondaryColor, bgColor = bgColor, textColor = onBgColor, borderColor = borderColor, onDismiss = { showHelpDialog = false }) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp) // Beri batas tinggi biar bisa di-scroll kalau HP-nya kecil
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(text = "1. Siapkan 2 device android.", color = onBgColor, style = Y2KTypography.bodySmall)
+                Text(text = "2. Device ke-1 pilih [HOST] untuk dijadikan kamera.", color = onBgColor, style = Y2KTypography.bodySmall)
+                Text(text = "3. Device ke-2 pilih [REMOTE] untuk dijadikan kontroller.", color = onBgColor, style = Y2KTypography.bodySmall)
+                Text(text = "4. Lakukan pairing lewat Wifi-Direct (P2P).", color = onBgColor, style = Y2KTypography.bodySmall)
+                Text(text = "5. Jepret sesukamu pake remote! Pose AI bakal otomatis ngebaca.", color = onBgColor, style = Y2KTypography.bodySmall)
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = "> SYSTEM_READY", color = primaryColor, style = Y2KTypography.bodyMedium, modifier = Modifier.y2kBlinkEffect(800))
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Y2KDialogButton("ACKNOWLEDGE", secondaryColor, onBgColor) { showHelpDialog = false }
             }
         }
     }
