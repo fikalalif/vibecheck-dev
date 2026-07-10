@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.vibecheck_dev"
+    namespace = "com.hn.vibecheck"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.vibecheck_dev"
+        applicationId = "com.hn.vibecheck"
         minSdk = 26 // <--- SEKARANG MENDUKUNG ANDROID 8 KE ATAS!
         targetSdk = 34 // (Catatan: Saya sarankan turunkan ke 34 karena API 36 masih sangat eksperimental/belum stabil)
         versionCode = 1

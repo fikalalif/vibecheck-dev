@@ -41,6 +41,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:372157512376:android:0986a3d93d983c3fdbd24d",
+        "android_client_info": {
+          "package_name": "com.hn.vibecheck"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "372157512376-o3ob70o1jffopl8hvqndnhj6mj999jl7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAc5ukzHcx9QRvqt8eCJqh9_0kL_oU7W84"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "372157512376-o3ob70o1jffopl8hvqndnhj6mj999jl7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
